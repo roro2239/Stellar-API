@@ -36,6 +36,9 @@ dependencyResolutionManagement {
     }
 
     versionCatalogs {
+        apiLibs {
+            from(files("api.versions.toml"))
+        }
         libs {
             version('hidden-api', '4.3.3')
             library('hidden-compat', 'dev.rikka.hidden', 'compat').versionRef('hidden-api')
