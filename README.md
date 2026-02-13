@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/roro2239/Stellar-API.svg)](https://jitpack.io/#roro2239/Stellar-API)
+
 # Stellar API 接入指南
 
 Stellar 是基于 Shizuku 的分支项目，是一个特权 API 框架，支持通过 ADB 或 Root 权限执行特权操作。本文档将指导你如何将 Stellar API 集成到你的应用中，以及如何从 Shizuku 迁移到 Stellar。
@@ -45,11 +47,11 @@ dependencyResolutionManagement {
 
 ```gradle
 dependencies {
-    implementation 'com.github.roro2239.Stellar:<版本号>'
+    implementation 'com.github.roro2239:Stellar-API:Tag'
 }
 ```
 
-> 将 `<版本号>` 替换为 [![JitPack](https://img.shields.io/jitpack/version/com.github.RORO2239/Stellar)](https://jitpack.io/#roro2239/Stellar) 显示的最新版本号
+> 将 `<版本号>` 替换为 [![JitPack](https://jitpack.io/v/roro2239/Stellar-API.svg)](https://jitpack.io/#roro2239/Stellar-API) 显示的最新版本号
 
 ### 2. 配置 AndroidManifest
 
@@ -790,7 +792,7 @@ Stellar 是基于 Shizuku 的分支项目，因此 API 设计高度相似，迁�
 // implementation 'dev.rikka.shizuku:provider:13.1.5'
 
 // 添加 Stellar 依赖
-implementation 'com.github.roro2239.Stellar:<版本号>'
+implementation 'com.github.roro2239:Stellar-API:Tag'
 ```
 
 同时在 `settings.gradle` 中添加 JitPack 仓库：
