@@ -32,4 +32,4 @@ dependencies {
     implementation apiLibs.coreKtx
 }
 
-apply from: rootProject.file('publish.gradle')
+apply from: file('../publish.gradle')
