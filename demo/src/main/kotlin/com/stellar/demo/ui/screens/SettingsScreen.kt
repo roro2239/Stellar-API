@@ -24,7 +24,9 @@ fun SettingsScreen(
     currentServiceMode: ServiceMode,
     onServiceModeChange: (ServiceMode) -> Unit,
     logText: String,
-    onClearLog: () -> Unit
+    onClearLog: () -> Unit,
+    serviceStartedLogs: List<String>,
+    onClearServiceStartedLogs: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -39,6 +41,11 @@ fun SettingsScreen(
             connected = userServiceConnected,
             currentMode = currentServiceMode,
             onModeChange = onServiceModeChange
+        )
+
+        ServiceStartedLogsCard(
+            logs = serviceStartedLogs,
+            onClear = onClearServiceStartedLogs
         )
 
         LogCard(
@@ -133,6 +140,76 @@ private fun UserServiceSettingsCard(
                     onCheckedChange = { isDaemon ->
                         onModeChange(if (isDaemon) ServiceMode.DAEMON else ServiceMode.ONE_TIME)
                     }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ServiceStartedLogsCard(
+    logs: List<String>,
+    onClear: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppShape.shapes.cardLarge,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "服务启动记录",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                IconButton(onClick = onClear) {
+                    Icon(Icons.Default.Delete, contentDescription = "清空记录")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = AppShape.shapes.cardMedium
+            ) {
+                val scrollState = rememberScrollState()
+                Text(
+                    text = if (logs.isEmpty()) "暂无记录" else logs.joinToString("\n"),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .padding(12.dp),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 12.sp,
+                    color = if (logs.isEmpty())
+                        MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    else
+                        MaterialTheme.colorScheme.onSurface
                 )
             }
         }

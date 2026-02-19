@@ -43,8 +43,12 @@ class MainActivity : ComponentActivity() {
         getSharedPreferences("stellar_demo_prefs", MODE_PRIVATE)
     }
 
+    private var serviceStartedLogs by mutableStateOf<List<String>>(emptyList())
+
     companion object {
         private const val PREF_SERVICE_MODE = "service_mode"
+        private const val PREF_SERVICE_STARTED_LOGS = "service_started_logs"
+        private const val MAX_SERVICE_LOGS = 50
     }
 
     private val binderReceivedListener = Stellar.OnBinderReceivedListener {
@@ -56,6 +60,16 @@ class MainActivity : ComponentActivity() {
         log("[Stellar] 服务已断开")
         serviceStatus = ServiceStatus.NOT_RUNNING
         serviceInfo = null
+    }
+
+    private val serviceStartedListener = Stellar.OnServiceStartedListener {
+        val timestamp = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+            .format(java.util.Date())
+        val entry = "[$timestamp] 服务已启动"
+        val updated = (listOf(entry) + serviceStartedLogs).take(MAX_SERVICE_LOGS)
+        serviceStartedLogs = updated
+        prefs.edit().putString(PREF_SERVICE_STARTED_LOGS, updated.joinToString("\n")).apply()
+        log("[Stellar] 服务已启动")
     }
 
     private val permissionResultListener =
@@ -70,9 +84,13 @@ class MainActivity : ComponentActivity() {
         val savedMode = prefs.getInt(PREF_SERVICE_MODE, ServiceMode.ONE_TIME.value)
         currentServiceMode = ServiceMode.fromValue(savedMode)
 
+        val savedLogs = prefs.getString(PREF_SERVICE_STARTED_LOGS, "") ?: ""
+        if (savedLogs.isNotEmpty()) serviceStartedLogs = savedLogs.split("\n")
+
         Stellar.addBinderReceivedListenerSticky(binderReceivedListener)
         Stellar.addBinderDeadListener(binderDeadListener)
         Stellar.addRequestPermissionResultListener(permissionResultListener)
+        Stellar.addServiceStartedListener(serviceStartedListener)
 
         DemoFunctions.setOnServiceStateChanged { connected ->
             userServiceConnected = connected
@@ -94,6 +112,7 @@ class MainActivity : ComponentActivity() {
         Stellar.removeBinderReceivedListener(binderReceivedListener)
         Stellar.removeBinderDeadListener(binderDeadListener)
         Stellar.removeRequestPermissionResultListener(permissionResultListener)
+        Stellar.removeServiceStartedListener(serviceStartedListener)
         DemoFunctions.setOnServiceStateChanged(null)
     }
 
@@ -173,7 +192,12 @@ class MainActivity : ComponentActivity() {
                             if (userServiceConnected) rebindUserServiceWithNewMode()
                         },
                         logText = logText,
-                        onClearLog = { clearLog() }
+                        onClearLog = { clearLog() },
+                        serviceStartedLogs = serviceStartedLogs,
+                        onClearServiceStartedLogs = {
+                            serviceStartedLogs = emptyList()
+                            prefs.edit().remove(PREF_SERVICE_STARTED_LOGS).apply()
+                        }
                     )
                 }
             }

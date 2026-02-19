@@ -119,11 +119,17 @@ class MainActivity : ComponentActivity() {
             if (allowed) {
                 Log.i("MyApp", "权限已授予")
                 // 权限已授予，可以执行特权操作
+                checkServiceStatus()
             } else {
                 Log.w("MyApp", "权限被拒绝")
                 // 权限被拒绝，提示用户
             }
         }
+
+    private val serviceStartedListener = Stellar.OnServiceStartedListener {
+        Log.i("MyApp", "Stellar 服务已启动")
+        // 服务启动时执行操作，例如执行跟随启动命令
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,6 +139,7 @@ class MainActivity : ComponentActivity() {
         Stellar.addBinderReceivedListenerSticky(binderReceivedListener)
         Stellar.addBinderDeadListener(binderDeadListener)
         Stellar.addRequestPermissionResultListener(permissionResultListener)
+        Stellar.addServiceStartedListener(serviceStartedListener)
     }
 
     override fun onDestroy() {
@@ -141,6 +148,7 @@ class MainActivity : ComponentActivity() {
         Stellar.removeBinderReceivedListener(binderReceivedListener)
         Stellar.removeBinderDeadListener(binderDeadListener)
         Stellar.removeRequestPermissionResultListener(permissionResultListener)
+        Stellar.removeServiceStartedListener(serviceStartedListener)
     }
 
     private fun checkServiceStatus() {
@@ -861,9 +869,11 @@ import roro.stellar.StellarHelper
 | 添加服务连接监听器（立即触发） | `Stellar.addBinderReceivedListenerSticky()` | `Shizuku.addBinderReceivedListenerSticky()` |
 | 添加服务断开监听器 | `Stellar.addBinderDeadListener()` | `Shizuku.addBinderDeadListener()` |
 | 添加权限请求结果监听器 | `Stellar.addRequestPermissionResultListener()` | `Shizuku.addRequestPermissionResultListener()` |
+| 添加服务启动监听器 | `Stellar.addServiceStartedListener()` | 无对应 API |
 | 移除服务连接监听器 | `Stellar.removeBinderReceivedListener()` | `Shizuku.removeBinderReceivedListener()` |
 | 移除服务断开监听器 | `Stellar.removeBinderDeadListener()` | `Shizuku.removeBinderDeadListener()` |
 | 移除权限请求结果监听器 | `Stellar.removeRequestPermissionResultListener()` | `Shizuku.removeRequestPermissionResultListener()` |
+| 移除服务启动监听器 | `Stellar.removeServiceStartedListener()` | 无对应 API |
 | 创建特权进程执行命令 | `Stellar.newProcess()` | `Shizuku.newProcess()`（已在最新版 API 弃用） |
 | 绑定用户服务 | `StellarUserService.bindUserService()` | `Shizuku.bindUserService()` |
 | 解绑用户服务 | `StellarUserService.unbindUserService()` | `Shizuku.unbindUserService()` |

@@ -72,6 +72,10 @@ object Stellar {
                 onetime
             )
         }
+
+        override fun onServiceStarted() {
+            scheduleServiceStartedListeners()
+        }
     }
 
     private val DEATH_RECIPIENT = DeathRecipient {
@@ -156,6 +160,8 @@ object Stellar {
         ArrayList<ListenerHolder<OnBinderDeadListener>>()
     private val PERMISSION_LISTENERS: MutableList<ListenerHolder<OnRequestPermissionResultListener>> =
         ArrayList<ListenerHolder<OnRequestPermissionResultListener>>()
+    private val SERVICE_STARTED_LISTENERS: MutableList<ListenerHolder<OnServiceStartedListener>> =
+        ArrayList<ListenerHolder<OnServiceStartedListener>>()
     private val MAIN_HANDLER = Handler(Looper.getMainLooper())
 
 
@@ -305,6 +311,30 @@ object Stellar {
     fun getService(): IStellarService? = service
 
     fun getPackageName(): String? = packageName
+
+    fun addServiceStartedListener(listener: OnServiceStartedListener, handler: Handler? = null) {
+        synchronized(RECEIVED_LISTENERS) {
+            SERVICE_STARTED_LISTENERS.add(ListenerHolder(listener, handler))
+        }
+    }
+
+    fun removeServiceStartedListener(listener: OnServiceStartedListener): Boolean {
+        synchronized(RECEIVED_LISTENERS) {
+            return SERVICE_STARTED_LISTENERS.removeIf { it.listener === listener }
+        }
+    }
+
+    private fun scheduleServiceStartedListeners() {
+        synchronized(RECEIVED_LISTENERS) {
+            for (holder in SERVICE_STARTED_LISTENERS) {
+                if (holder.handler != null) {
+                    holder.handler.post { holder.listener.onServiceStarted() }
+                } else {
+                    MAIN_HANDLER.post { holder.listener.onServiceStarted() }
+                }
+            }
+        }
+    }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
     fun getClientBinder(): IBinder? = Stellar_APPLICATION.asBinder()
@@ -546,6 +576,10 @@ object Stellar {
 
     fun interface OnRequestPermissionResultListener {
         fun onRequestPermissionResult(requestCode: Int, allowed: Boolean, onetime: Boolean)
+    }
+
+    fun interface OnServiceStartedListener {
+        fun onServiceStarted()
     }
 
     private class ListenerHolder<T>(val listener: T, val handler: Handler?) {
