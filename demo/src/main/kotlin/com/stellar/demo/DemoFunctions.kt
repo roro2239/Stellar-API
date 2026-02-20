@@ -3,7 +3,9 @@ package com.stellar.demo
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.IBinder
+import android.os.ParcelFileDescriptor
 import roro.stellar.Stellar
+import roro.stellar.StellarPtyProcess
 import roro.stellar.StellarSystemProperties
 import roro.stellar.userservice.StellarUserService
 import roro.stellar.userservice.UserServiceArgs
@@ -415,6 +417,40 @@ object DemoFunctions {
         } catch (e: Exception) {
             logger.log("[Error] 调用失败: ${e.message}")
         }
+    }
+
+    fun startPtyShell(echoEnabled: Boolean, onOutput: (String) -> Unit): PtyShellSession? {
+        if (!Stellar.pingBinder() || !Stellar.checkSelfPermission()) return null
+        val pty = try {
+            Stellar.newPtyProcess(arrayOf("sh"), null, null)
+        } catch (_: Exception) { return null }
+        val fd = pty.ptyFd
+        val session = PtyShellSession(pty, ParcelFileDescriptor.AutoCloseOutputStream(fd), echoEnabled)
+        thread {
+            try {
+                val reader = ParcelFileDescriptor.AutoCloseInputStream(fd)
+                val buf = ByteArray(4096)
+                while (true) {
+                    val n = reader.read(buf)
+                    if (n < 0) break
+                    val text = String(buf, 0, n)
+                    if (echoEnabled || !session.isEcho(text)) onOutput(text)
+                }
+            } catch (_: Exception) {}
+        }
+        return session
+    }
+
+    class PtyShellSession(
+        private val pty: StellarPtyProcess,
+        private val writer: java.io.OutputStream,
+        private val echoEnabled: Boolean
+    ) {
+        private var lastCmd = ""
+        fun send(cmd: String) { lastCmd = cmd; writer.write("$cmd\n".toByteArray()) }
+        fun isEcho(text: String) = text.trimEnd('\r', '\n', ' ') == lastCmd
+        fun resize(cols: Int, rows: Int) = pty.resize(cols, rows)
+        fun destroy() = pty.destroy()
     }
 
     private fun checkReady(logger: Logger): Boolean {

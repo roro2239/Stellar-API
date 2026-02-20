@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import kotlin.concurrent.thread
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,6 +18,7 @@ import com.stellar.demo.ui.navigation.DemoBottomNavigation
 import com.stellar.demo.ui.screens.*
 import com.stellar.demo.ui.theme.DemoTheme
 import com.stellar.demo.ui.components.ExecutionDialog
+import com.stellar.demo.ui.components.PtyShellDialog
 import roro.stellar.Stellar
 import roro.stellar.StellarHelper
 import roro.stellar.userservice.ServiceMode
@@ -38,6 +40,11 @@ class MainActivity : ComponentActivity() {
     private var executionDialogTitle by mutableStateOf("")
     private var executionDialogOutput by mutableStateOf("")
     private var isExecutionRunning by mutableStateOf(false)
+
+    private var showPtyShellDialog by mutableStateOf(false)
+    private var ptyShellOutput by mutableStateOf("")
+    private var ptyShellSession by mutableStateOf<DemoFunctions.PtyShellSession?>(null)
+    private var ptyEchoEnabled by mutableStateOf(true)
 
     private val prefs by lazy {
         getSharedPreferences("stellar_demo_prefs", MODE_PRIVATE)
@@ -176,7 +183,8 @@ class MainActivity : ComponentActivity() {
                         isReady = serviceStatus == ServiceStatus.READY,
                         onActionClick = { action ->
                             if (serviceStatus == ServiceStatus.READY) {
-                                executeAction(action)
+                                if (action.customDialog) action.runner()
+                                else executeAction(action)
                             } else {
                                 Toast.makeText(this@MainActivity, "服务未就绪", Toast.LENGTH_SHORT).show()
                             }
@@ -191,6 +199,8 @@ class MainActivity : ComponentActivity() {
                             log("[设置] 服务模式: ${if (mode == ServiceMode.DAEMON) "守护" else "一次性"}")
                             if (userServiceConnected) rebindUserServiceWithNewMode()
                         },
+                        ptyEchoEnabled = ptyEchoEnabled,
+                        onPtyEchoChange = { ptyEchoEnabled = it },
                         logText = logText,
                         onClearLog = { clearLog() },
                         serviceStartedLogs = serviceStartedLogs,
@@ -211,6 +221,18 @@ class MainActivity : ComponentActivity() {
                 onDismiss = {
                     showExecutionDialog = false
                     executionDialogOutput = ""
+                }
+            )
+        }
+
+        if (showPtyShellDialog) {
+            PtyShellDialog(
+                session = ptyShellSession,
+                output = ptyShellOutput,
+                onDismiss = {
+                    showPtyShellDialog = false
+                    ptyShellSession = null
+                    ptyShellOutput = ""
                 }
             )
         }
@@ -439,6 +461,31 @@ class MainActivity : ComponentActivity() {
                         "验证远程服务权限",
                         Icons.Default.VpnKey
                     ) { DemoFunctions.checkRemotePermissions(this, logger) }
+                )
+            ),
+            FunctionCategory(
+                name = "PTY Shell",
+                icon = Icons.Default.Terminal,
+                actions = listOf(
+                    FunctionAction(
+                        "交互式 Shell",
+                        "newPtyProcess - 支持输入输出",
+                        Icons.Default.Terminal,
+                        customDialog = true
+                    ) {
+                        ptyShellOutput = ""
+                        ptyShellSession = null
+                        thread {
+                            val session = DemoFunctions.startPtyShell(ptyEchoEnabled) { text ->
+                                android.util.Log.d("PtyShell", "output: $text")
+                                runOnUiThread { ptyShellOutput += text }
+                            }
+                            runOnUiThread {
+                                ptyShellSession = session
+                                showPtyShellDialog = true
+                            }
+                        }
+                    }
                 )
             ),
             FunctionCategory(

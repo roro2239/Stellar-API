@@ -360,6 +360,14 @@ object Stellar {
         }
     }
 
+    fun newPtyProcess(cmd: Array<String?>, env: Array<String?>?, dir: String?): StellarPtyProcess {
+        try {
+            return StellarPtyProcess(requireService().newPtyProcess(cmd, env, dir))
+        } catch (e: RemoteException) {
+            throw rethrowAsRuntimeException(e)
+        }
+    }
+
     val uid: Int
         get() {
             if (serverUid != -1) return serverUid

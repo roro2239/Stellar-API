@@ -4,6 +4,8 @@ import com.stellar.server.IRemoteProcess;
 import com.stellar.server.IStellarApplication;
 import com.stellar.server.IUserServiceCallback;
 
+import com.stellar.server.IRemotePtyProcess;
+
 interface IStellarService {
 
     int getVersion() = 2;
@@ -29,6 +31,8 @@ interface IStellarService {
 
 
     IRemoteProcess newProcess(in String[] cmd, in String[] env, in String dir) = 7;
+
+    IRemotePtyProcess newPtyProcess(in String[] cmd, in String[] env, in String dir) = 500;
 
 
     String getSystemProperty(in String name, in String defaultValue) = 9;

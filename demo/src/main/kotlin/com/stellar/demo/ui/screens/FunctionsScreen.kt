@@ -27,6 +27,7 @@ data class FunctionAction(
     val title: String,
     val description: String,
     val icon: ImageVector,
+    val customDialog: Boolean = false,
     val runner: () -> Unit
 )
 

@@ -23,6 +23,8 @@ fun SettingsScreen(
     userServiceConnected: Boolean,
     currentServiceMode: ServiceMode,
     onServiceModeChange: (ServiceMode) -> Unit,
+    ptyEchoEnabled: Boolean,
+    onPtyEchoChange: (Boolean) -> Unit,
     logText: String,
     onClearLog: () -> Unit,
     serviceStartedLogs: List<String>,
@@ -43,6 +45,11 @@ fun SettingsScreen(
             onModeChange = onServiceModeChange
         )
 
+        PtySettingsCard(
+            echoEnabled = ptyEchoEnabled,
+            onEchoChange = onPtyEchoChange
+        )
+
         ServiceStartedLogsCard(
             logs = serviceStartedLogs,
             onClear = onClearServiceStartedLogs
@@ -52,6 +59,43 @@ fun SettingsScreen(
             logText = logText,
             onClear = onClearLog
         )
+    }
+}
+
+@Composable
+private fun PtySettingsCard(
+    echoEnabled: Boolean,
+    onEchoChange: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = AppShape.shapes.cardLarge,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+            Text(
+                text = "PTY Shell 设置",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = "显示回显", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = if (echoEnabled) "输入内容会显示在输出中" else "输入内容不显示在输出中",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(checked = echoEnabled, onCheckedChange = onEchoChange)
+            }
+        }
     }
 }
 
