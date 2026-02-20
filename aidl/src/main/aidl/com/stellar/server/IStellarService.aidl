@@ -69,6 +69,8 @@ interface IStellarService {
 
     void clearLogs() = 301;
 
+    List<String> getLogsForUid(int uid) = 302;
+
     boolean isShizukuCompatEnabled() = 400;
 
     void setShizukuCompatEnabled(boolean enabled) = 401;

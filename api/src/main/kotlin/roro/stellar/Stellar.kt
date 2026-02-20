@@ -543,6 +543,15 @@ object Stellar {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    fun getLogsForUid(uid: Int): List<String>? {
+        try {
+            return requireService().getLogsForUid(uid)
+        } catch (e: RemoteException) {
+            throw rethrowAsRuntimeException(e)
+        }
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
     fun clearLogs() {
         try {
             requireService().clearLogs()
