@@ -1,8 +1,9 @@
 package roro.stellar
 
+import roro.stellar.shared.BuildConfig
+
 object StellarApiConstants {
-    const val SERVER_VERSION = 2
-    const val SERVER_PATCH_VERSION = 0
+    val SERVER_VERSION = BuildConfig.SERVER_API_VERSION
 
     const val PERMISSION_KEY = "roro.stellar.permissions"
     val PERMISSIONS = arrayOf(
@@ -17,7 +18,6 @@ object StellarApiConstants {
     const val BINDER_TRANSACTION_transact = 1
 
     const val BIND_APPLICATION_SERVER_VERSION = "stellar:attach-reply-version"
-    const val BIND_APPLICATION_SERVER_PATCH_VERSION = "stellar:attach-reply-patch-version"
     const val BIND_APPLICATION_SERVER_UID = "stellar:attach-reply-uid"
     const val BIND_APPLICATION_SERVER_SECONTEXT = "stellar:attach-reply-secontext"
     const val BIND_APPLICATION_PERMISSION_GRANTED = "stellar:attach-reply-permission-granted"

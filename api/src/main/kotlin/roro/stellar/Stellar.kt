@@ -30,9 +30,6 @@ object Stellar {
 
     private var serverApiVersion = -1
 
-    @get:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-    var serverPatchVersion: Int = -1
-
     private var serverContext: String? = null
 
     private var permissionGranted = false
@@ -48,8 +45,6 @@ object Stellar {
         override fun bindApplication(data: Bundle) {
             serverUid = data.getInt(StellarApiConstants.BIND_APPLICATION_SERVER_UID, -1)
             serverApiVersion = data.getInt(StellarApiConstants.BIND_APPLICATION_SERVER_VERSION, -1)
-            serverPatchVersion =
-                data.getInt(StellarApiConstants.BIND_APPLICATION_SERVER_PATCH_VERSION, -1)
             serverContext = data.getString(StellarApiConstants.BIND_APPLICATION_SERVER_SECONTEXT)
             permissionGranted =
                 data.getBoolean(StellarApiConstants.BIND_APPLICATION_PERMISSION_GRANTED, false)

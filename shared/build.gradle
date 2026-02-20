@@ -5,6 +5,13 @@ plugins {
 
 android {
     namespace 'roro.stellar.shared'
+    buildFeatures {
+        buildConfig true
+    }
+    defaultConfig {
+        buildConfigField 'int', 'SERVER_API_VERSION', "${rootProject.ext.api_version_code}"
+        buildConfigField 'String', 'SERVER_API_VERSION_NAME', "\"${rootProject.ext.api_version_name}\""
+    }
     buildTypes {
         release {
             minifyEnabled false

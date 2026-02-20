@@ -78,11 +78,6 @@ object DemoFunctions {
             }
 
             logger.log("")
-
-            val patchVersion = Stellar.serverPatchVersion
-            logger.log("服务补丁版本: $patchVersion")
-
-            logger.log("")
             logger.log("----------------")
 
             if (apiVersion < latestVersion) {
