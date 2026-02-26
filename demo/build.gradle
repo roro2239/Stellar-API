@@ -39,10 +39,8 @@ android {
 
     buildTypes {
         debug {
-            signingConfig signingConfigs.sign
         }
         release {
-            signingConfig signingConfigs.sign
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -79,4 +77,3 @@ dependencies {
     implementation demoLibs.capsule
 }
 
-apply from: rootProject.file('signing.gradle')
