@@ -578,6 +578,24 @@ object Stellar {
         }
     }
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    fun isDaemonEnabled(): Boolean {
+        return try {
+            requireService().isDaemonEnabled()
+        } catch (e: RemoteException) {
+            throw rethrowAsRuntimeException(e)
+        }
+    }
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    fun setDaemonEnabled(enabled: Boolean) {
+        try {
+            requireService().setDaemonEnabled(enabled)
+        } catch (e: RemoteException) {
+            throw rethrowAsRuntimeException(e)
+        }
+    }
+
     fun interface OnBinderReceivedListener {
         fun onBinderReceived()
     }

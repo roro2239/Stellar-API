@@ -75,4 +75,8 @@ interface IStellarService {
 
     void setShizukuCompatEnabled(boolean enabled) = 401;
 
+    boolean isDaemonEnabled() = 402;
+
+    void setDaemonEnabled(boolean enabled) = 403;
+
 }
