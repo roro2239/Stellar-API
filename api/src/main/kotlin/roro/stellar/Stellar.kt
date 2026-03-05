@@ -596,6 +596,14 @@ object Stellar {
         }
     }
 
+    fun getSystemService(name: String): IBinder? {
+        return try {
+            requireService().getSystemService(name)
+        } catch (e: RemoteException) {
+            throw rethrowAsRuntimeException(e)
+        }
+    }
+
     fun interface OnBinderReceivedListener {
         fun onBinderReceived()
     }
