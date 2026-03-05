@@ -231,6 +231,17 @@ Stellar.newProcess(
 ): StellarRemoteProcess
 ```
 
+#### 系统服务访问
+
+```kotlin
+// 获取系统服务 Binder（在系统进程权限下）
+Stellar.getSystemService(name: String): IBinder?
+
+// 示例：获取 DisplayManager
+val displayBinder = Stellar.getSystemService("display")
+val displayManager = IDisplayManager.Stub.asInterface(displayBinder)
+```
+
 #### 高级功能
 
 ```kotlin
