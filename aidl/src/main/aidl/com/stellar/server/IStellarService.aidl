@@ -79,4 +79,6 @@ interface IStellarService {
 
     void setDaemonEnabled(boolean enabled) = 403;
 
+    IBinder getSystemService(String name) = 404;
+
 }
