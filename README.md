@@ -1,6 +1,8 @@
-[![](https://jitpack.io/v/roro2239/Stellar-API.svg)](https://jitpack.io/#roro2239/Stellar-API)
+## 重要变更
 
-# Stellar API 接入指南
+我们将在未来的 Stellar 2.0 版本**弃用** Stellar API，请留意此变更并做好开发规划。
+
+# Stellar API 接入指南 [![](https://jitpack.io/v/roro2239/Stellar-API.svg)](https://jitpack.io/#roro2239/Stellar-API)
 
 Stellar 是基于 Shizuku 的分支项目，是一个特权 API 框架，支持通过 ADB 或 Root 权限执行特权操作。本文档将指导你如何将 Stellar API 集成到你的应用中，以及如何从 Shizuku 迁移到 Stellar。
 
